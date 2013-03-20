@@ -1,0 +1,41 @@
+/* Will be compiled down to a single stylesheet with your sass files */
+
+#mapContainer { 
+    background: #f0000; 
+    border: 1px solid #ccc; 
+    position: relative; 
+    width: 808px; 
+    height: 670px; 
+    overflow: hidden; 
+}
+#mapContainer #map { 
+    width: 808px; 
+    height: 670px; 
+}
+
+#mapContainer #mapControls { 
+    position: absolute; 
+    left: 15px; 
+    top: 15px; 
+    width: 70px; 
+    z-index: 1;
+}
+
+#mapContainer #mapControls #marker {
+    background: url('../images/man_r.png') 0 0;
+    display: block;
+    cursor: default;
+    width: 62px;
+    height: 100px;
+    border: 1px solid white;
+    /*background-color: white;*/
+    text-align: center;
+}
+
+#mapContainer #mapControls #marker.left {
+    background: url('../images/man.png') 0 0;
+}
+
+#square {
+    background-color: #ff0000;
+}

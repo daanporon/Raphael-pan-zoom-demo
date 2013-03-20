@@ -1,0 +1,9 @@
+{
+  "author": "Daan Poron",
+  "name": "Raphael_pan-zoom_demo",
+  "version": "0.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "webserver": "*"
+  }
+}
