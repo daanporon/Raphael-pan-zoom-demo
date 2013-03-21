@@ -162,9 +162,7 @@
                     stepsX = center.pageX - previousCenter.pageX,
                     stepsY = center.pageY - previousCenter.pageY;
 
-                if (stepsX > 0.1 || stepsY > 0.1) { // limit panning
-                    move(stepsX, stepsY);
-                }
+                move(stepsX, stepsY);
                 previousCenter = center;
             };
 
