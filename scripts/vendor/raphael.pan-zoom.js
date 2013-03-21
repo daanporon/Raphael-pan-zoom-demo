@@ -104,68 +104,81 @@
                 'drag_lock_to_axis': false
             });
 
-            var initialZoom, previousZoom, previousCenter;
+            var initialZoom, initialPercentZoom, previousZoom, previousCenter, firstPinch;
 
             hammer.on("touch", function(event) {
                 initialZoom = me.currZoom;
+                initialPercentZoom = 1 / (1 - (initialZoom * settings.zoomStep));
                 previousZoom = me.currZoom;
                 previousCenter = event.gesture.center;
+                firstPinch = true;
             });
 
             hammer.on("release", function(event) {
             });
 
+/*
             var $pointer = $('<div style="width: 2px; height: 2px; position: absolute; overflow: hidden; display: box; left: 10px; top: 10px; background-color: red;"></div>');
             $('body').append($pointer);
 
             var $pointer2 = $('<div style="width: 2px; height: 2px; position: absolute; overflow: hidden; display: box; left: 10px; top: 10px; background-color: blue;"></div>');
             $('body').append($pointer2);
+*/
 
             var pinching = function(event) {
                 var g = event.gesture,
-                    newZoom = initialZoom * g.scale,
+                    newPercentZoom = initialPercentZoom * g.scale,
+                    newZoom = - (( 1 / newPercentZoom -1) / settings.zoomStep),
                     steps = newZoom - previousZoom;
 
                 if (steps !== 0) {
                     applyZoom(steps, getRelativePosition(g.center, container));
                     previousZoom = newZoom;
                 }
+
+                firstPinch = false;
             };
 
-            var panning = function(event) {
+            var panning = function(event, pinching) {
+                if (pinching === "undefined") {
+                    pinching = false;
+                }
+
                 var g = event.gesture,
                     center = g.center,
                     stepsX = center.pageX - previousCenter.pageX,
                     stepsY = center.pageY - previousCenter.pageY;
 
-                $pointer2.css({
-                    'left': previousCenter.pageX + 'px',
-                    'top': previousCenter.pageY + 'px'
-                });
+                if ((!pinching || !firstPinch) && (pinching || firstPinch)) {
 
-                move(stepsX, stepsY);
+                    move(stepsX, stepsY);
+
+/*
+                    $pointer2.css({
+                        'left': previousCenter.pageX + 'px',
+                        'top': previousCenter.pageY + 'px'
+                    });
+
+                    $pointer.css({
+                        'left': center.pageX + 'px',
+                        'top': center.pageY + 'px'
+                    });
+*/
+                }
                 previousCenter = center;
-
-                $pointer.css({
-                    'left': center.pageX + 'px',
-                    'top': center.pageY + 'px'
-                });
             };
 
             hammer.on("pinchin", function(event) {
+                panning(event, true);
                 pinching(event);
-                panning(event);
             });
 
             hammer.on("pinchout", function(event) {
+                panning(event, true);
                 pinching(event);
-                panning(event);
             });
 
-            hammer.on("dragup", panning);
-            hammer.on("dragdown", panning);
-            hammer.on("dragleft", panning);
-            hammer.on("dragright", panning);
+            hammer.on("drag", panning);
         }
 
         container.onmousedown = function (e) {
@@ -296,9 +309,6 @@
                 newWidth = paper.width * zoomPercentage, // this is the new width of what's shown in the viewbox ... this get's smaller when you have a higher zoomLevel (the higher the zoomLevel, the less there is shown in the viewBox)
                 newHeight = paper.height * zoomPercentage; // this is the new height of what's shown in the viewbox ... this get's smaller when you have a higher zoomLevel (the higher the zoomLevel, the less there is shown in the viewBox)
 
-            console.log(zoomPercentage);
-
-/*
             // make sure you don't pan too far
             if (me.currPos.x < 0) me.currPos.x = 0;
             else if (me.currPos.x > paper.width - newWidth) { // paper.width is not allways the same to the real width and height of the svg ... maybe at custom boundaries?
@@ -309,8 +319,6 @@
             else if (me.currPos.y > paper.height - newHeight) {
                 me.currPos.y = paper.height - newHeight;
             }
-*/
-
 
             paper.setViewBox(me.currPos.x, me.currPos.y, newWidth, newHeight);
             settings.onRepaint();
